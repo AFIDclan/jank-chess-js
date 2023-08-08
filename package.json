@@ -1,0 +1,19 @@
+{
+  "name": "jank-chess",
+  "version": "1.0.0",
+  "description": "A javascript wrapped c++ chess engine for fun and profit!",
+  "main": "index.js",
+  "gypfile": true,
+  "scripts": {
+    "build": "node-gyp rebuild",
+    "clean": "node-gyp clean"
+  },
+  "author": "Jonathan Van Schenck, Sean Sullivan",
+  "license": "ISC",
+  "devDependencies": {
+    "node-gyp": "^9.4.0"
+  },
+  "dependencies": {
+    "node-addon-api": "^7.0.0"
+  }
+}
