@@ -1,9 +1,24 @@
 #include "wrapper.h"
 
+const std::string piece[8] = {"p", "n", "b", "r", "q", "k"};
+
+
+Board* getBoard(const Napi::CallbackInfo& info) {
+
+    if (info.Length() < 1 || !info[0].IsNumber()) {
+        Napi::TypeError::New(info.Env(), "BoardWrapper::NativeGetMoves expects a Board pointer as its first argument").ThrowAsJavaScriptException();
+    }
+
+    Board* board = reinterpret_cast<Board*>(info[0].As<Napi::Number>().Int64Value());
+
+    return board;
+}
+
 Napi::Object BoardWrapper::Init(Napi::Env env, Napi::Object exports)
 {
     exports.Set("BoardWrapper::NativeConstructor", Napi::Function::New(env, BoardWrapper::NativeConstructor));
     exports.Set("BoardWrapper::NativeGetMoves", Napi::Function::New(env, BoardWrapper::NativeGetMoves));
+    exports.Set("BoardWrapper::NativeMakeMove", Napi::Function::New(env, BoardWrapper::NativeMakeMove));
 
     return exports;
 }
@@ -18,7 +33,6 @@ Napi::Number BoardWrapper::NativeConstructor(const Napi::CallbackInfo& info)
     Board* board;
 
     if (info.Length() > 0 && info[0].IsString() ) {
-        std::cout << "Loading FEN: " << info[0].As<Napi::String>().Utf8Value() << "\n";
         board = new Board(info[0].As<Napi::String>().Utf8Value());
     } else {
         board = new Board();
@@ -34,12 +48,7 @@ Napi::Value BoardWrapper::NativeGetMoves(const Napi::CallbackInfo& info)
 {
     Napi::Env env = info.Env();
 
-    if (info.Length() < 1 || !info[0].IsNumber()) {
-        Napi::TypeError::New(env, "BoardWrapper::NativeGetMoves expects a Board pointer as its first argument").ThrowAsJavaScriptException();
-    }
-
-    Board* board = reinterpret_cast<Board*>(info[0].As<Napi::Number>().Int64Value());
-
+    Board* board = getBoard(info);
 
     std::vector<Move> moves;
     board->generatePsudoLegalMoves();
@@ -62,6 +71,49 @@ Napi::Value BoardWrapper::NativeGetMoves(const Napi::CallbackInfo& info)
 
     return js_moves;
 }
+
+Napi::Boolean BoardWrapper::NativeMakeMove(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+
+    Board* board = getBoard(info);
+
+    std::string move = info[1].As<Napi::String>().Utf8Value();
+
+    if (move.length() < 4)
+        Napi::TypeError::New(env, "BoardWrapper::NativeMakeMove move must be at least 4 chars long").ThrowAsJavaScriptException();
+
+    int from_file = move[0] - 'a';
+    int from_rank = move[1] - '1';
+    int from = from_file + from_rank * 8;
+
+    int to_file = move[2] - 'a';
+    int to_rank = move[3] - '1';
+    int to = to_file + to_rank * 8;
+
+    if (from < 0 || from > 63 || to < 0 || to > 63)
+        Napi::TypeError::New(env, "BoardWrapper::NativeMakeMove invalid move").ThrowAsJavaScriptException();
+
+    Move m;
+    
+    if (move.length() == 5)
+    {
+        Piece promotion = static_cast<Piece>(piece->find(move.substr(4,1)));
+        m = Move(from, to, promotion);
+    } else {
+        m = Move(from, to);
+    }
+   
+    try {
+        board->make(&m);
+    } catch (std::exception& e) {
+        Napi::TypeError::New(env, "Invalid Move: " + move).ThrowAsJavaScriptException();
+    }
+    
+
+    return Napi::Boolean::New(env, true);
+}
+
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
 

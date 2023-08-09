@@ -14,6 +14,11 @@ class Board
     {
         return jankchess["BoardWrapper::NativeGetMoves"](this._native_pointer)
     }
+
+    make_move(move)
+    {
+        return jankchess["BoardWrapper::NativeMakeMove"](this._native_pointer, move)
+    }
 }
 
 
@@ -27,7 +32,16 @@ let start = Date.now()
 // }
     
 let moves = board.get_moves()
+
+let move = moves[0]
+console.log("Making:", move)
+board.make_move(move)
+
+moves = board.get_moves()
+
 console.log(moves)
+
+
 
 let end = Date.now()
 
