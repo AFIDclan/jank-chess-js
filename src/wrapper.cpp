@@ -19,6 +19,9 @@ Napi::Object BoardWrapper::Init(Napi::Env env, Napi::Object exports)
     exports.Set("BoardWrapper::NativeConstructor", Napi::Function::New(env, BoardWrapper::NativeConstructor));
     exports.Set("BoardWrapper::NativeGetMoves", Napi::Function::New(env, BoardWrapper::NativeGetMoves));
     exports.Set("BoardWrapper::NativeMakeMove", Napi::Function::New(env, BoardWrapper::NativeMakeMove));
+    exports.Set("BoardWrapper::NativeUnmakeMove", Napi::Function::New(env, BoardWrapper::NativeUnmakeMove));
+    exports.Set("BoardWrapper::NativeGetTurn", Napi::Function::New(env, BoardWrapper::NativeGetTurn));
+    exports.Set("BoardWrapper::NativeGetMaterial", Napi::Function::New(env, BoardWrapper::NativeGetMaterial));
 
     return exports;
 }
@@ -72,6 +75,47 @@ Napi::Value BoardWrapper::NativeGetMoves(const Napi::CallbackInfo& info)
     return js_moves;
 }
 
+Napi::Number BoardWrapper::NativeGetMaterial(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+
+    Board* board = getBoard(info);
+
+    std::string color = info[1].As<Napi::String>().Utf8Value();
+
+    Color turn = color == "w" ? Color::white : Color::black;
+
+    int material = board->material(turn);
+
+    return Napi::Number::New(env, material);
+}
+
+Napi::String BoardWrapper::NativeGetTurn(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+
+    Board* board = getBoard(info);
+
+    Color turn = board->getSideToMove();
+    return Napi::String::New(env, turn == Color::white ? "w" : "b");
+}
+
+Napi::Boolean BoardWrapper::NativeUnmakeMove(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+
+    Board* board = getBoard(info);
+
+    //Get the move from the args
+    std::string move = info[1].As<Napi::String>().Utf8Value();
+
+    Move m = board->parseUCIMove(move);
+
+    board->unmake(&m);
+
+    return Napi::Boolean::New(env, true);
+}
+
 Napi::Boolean BoardWrapper::NativeMakeMove(const Napi::CallbackInfo& info)
 {
     Napi::Env env = info.Env();
@@ -80,30 +124,8 @@ Napi::Boolean BoardWrapper::NativeMakeMove(const Napi::CallbackInfo& info)
 
     std::string move = info[1].As<Napi::String>().Utf8Value();
 
-    if (move.length() < 4)
-        Napi::TypeError::New(env, "BoardWrapper::NativeMakeMove move must be at least 4 chars long").ThrowAsJavaScriptException();
+    Move m = board->parseUCIMove(move);
 
-    int from_file = move[0] - 'a';
-    int from_rank = move[1] - '1';
-    int from = from_file + from_rank * 8;
-
-    int to_file = move[2] - 'a';
-    int to_rank = move[3] - '1';
-    int to = to_file + to_rank * 8;
-
-    if (from < 0 || from > 63 || to < 0 || to > 63)
-        Napi::TypeError::New(env, "BoardWrapper::NativeMakeMove invalid move").ThrowAsJavaScriptException();
-
-    Move m;
-    
-    if (move.length() == 5)
-    {
-        Piece promotion = static_cast<Piece>(piece->find(move.substr(4,1)));
-        m = Move(from, to, promotion);
-    } else {
-        m = Move(from, to);
-    }
-   
     try {
         board->make(&m);
     } catch (std::exception& e) {
