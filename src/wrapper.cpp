@@ -19,9 +19,10 @@ Napi::Object BoardWrapper::Init(Napi::Env env, Napi::Object exports)
     exports.Set("BoardWrapper::NativeConstructor", Napi::Function::New(env, BoardWrapper::NativeConstructor));
     exports.Set("BoardWrapper::NativeGetMoves", Napi::Function::New(env, BoardWrapper::NativeGetMoves));
     exports.Set("BoardWrapper::NativeMakeMove", Napi::Function::New(env, BoardWrapper::NativeMakeMove));
-    exports.Set("BoardWrapper::NativeUnmakeMove", Napi::Function::New(env, BoardWrapper::NativeUnmakeMove));
+    exports.Set("BoardWrapper::NativeUndoMove", Napi::Function::New(env, BoardWrapper::NativeUndoMove));
     exports.Set("BoardWrapper::NativeGetTurn", Napi::Function::New(env, BoardWrapper::NativeGetTurn));
     exports.Set("BoardWrapper::NativeGetMaterial", Napi::Function::New(env, BoardWrapper::NativeGetMaterial));
+    exports.Set("BoardWrapper::NativeGetFen", Napi::Function::New(env, BoardWrapper::NativeGetFen));
 
     return exports;
 }
@@ -90,6 +91,17 @@ Napi::Number BoardWrapper::NativeGetMaterial(const Napi::CallbackInfo& info)
     return Napi::Number::New(env, material);
 }
 
+Napi::String BoardWrapper::NativeGetFen(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+
+    Board* board = getBoard(info);
+
+    std::string fen = board->fen();
+
+    return Napi::String::New(env, fen);
+}
+
 Napi::String BoardWrapper::NativeGetTurn(const Napi::CallbackInfo& info)
 {
     Napi::Env env = info.Env();
@@ -100,16 +112,14 @@ Napi::String BoardWrapper::NativeGetTurn(const Napi::CallbackInfo& info)
     return Napi::String::New(env, turn == Color::white ? "w" : "b");
 }
 
-Napi::Boolean BoardWrapper::NativeUnmakeMove(const Napi::CallbackInfo& info)
+Napi::Boolean BoardWrapper::NativeUndoMove(const Napi::CallbackInfo& info)
 {
     Napi::Env env = info.Env();
 
     Board* board = getBoard(info);
 
-    //Get the move from the args
-    std::string move = info[1].As<Napi::String>().Utf8Value();
-
-    Move m = board->parseUCIMove(move);
+    Move m = BoardWrapper::move_history.back();
+    BoardWrapper::move_history.pop_back();
 
     board->unmake(&m);
 
@@ -128,6 +138,8 @@ Napi::Boolean BoardWrapper::NativeMakeMove(const Napi::CallbackInfo& info)
 
     try {
         board->make(&m);
+        BoardWrapper::move_history.push_back(m);
+
     } catch (std::exception& e) {
         Napi::TypeError::New(env, "Invalid Move: " + move).ThrowAsJavaScriptException();
     }
