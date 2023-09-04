@@ -6,14 +6,18 @@
   "gypfile": true,
   "scripts": {
     "build": "node-gyp rebuild",
-    "clean": "node-gyp clean"
+    "clean": "node-gyp clean",
+    "test": "npx mocha test.js"
   },
   "author": "Jonathan Van Schenck, Sean Sullivan",
   "license": "ISC",
   "devDependencies": {
+    "chai": "^4.3.8",
+    "mocha": "^10.2.0",
     "node-gyp": "^9.4.0"
   },
   "dependencies": {
-    "node-addon-api": "^7.0.0"
+    "node-addon-api": "^7.0.0",
+    "yaclc": "^1.0.0"
   }
 }

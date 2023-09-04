@@ -1,65 +1,89 @@
-const { Board } = require('./')
-
-let board = new Board()
-
-let start = Date.now()
-
-// for (let i = 0; i < 1000000; i++)
-// {
-//     let moves = board.get_moves()
-// }
-    
-console.log("Get Moves")
-let moves = board.get_moves()
-console.log(moves)
-
-console.log("Move")
-board.move("d2d4")
-
-let fen = board.fen()
-
-console.log(fen)
-
-console.log("Move")
-board.move("e7e5")
-
-fen = board.fen()
-
-console.log(fen)
-
-console.log("Get Moves")
-moves = board.get_moves()
-
-console.log(board.fen())
-
-console.log("UNDO")
-board.undo()
-console.log(board.fen())
-
-console.log("UNDO")
-board.undo()
-console.log(board.fen())
+const { expect } = require("chai");
+const { Board } = require("./");
 
 
-console.log(board.fen())
+// TODO: These test were outlined but never completed. Need to actually check return values
 
-let turn = board.turn()
-console.log("Turn:", turn)
 
-let material_black = board.material("b")
+describe("Chess Board Operations", function () {
+  let board = new Board();
 
-console.log("Material Black:", material_black)
+  beforeEach(function () {
+    board = new Board();
+  });
 
-let end = Date.now()
+  it("should get available moves", function () {
+    const moves = board.get_moves();
+    expect(moves).to.be.an("array");
+  });
 
-console.log((end - start) / 1000000, "ms per move")
+  it("should make a move and get FEN", function () {
+    board.move("d2d4");
+    const fen = board.fen();
+    expect(fen).to.be.a("string");
+  });
 
-let board2 = new Board("8/8/8/8/8/2K5/8/Q2Bk3 w - - 11 11")
+  it("should make another move and get FEN", function () {
+    board.move("d2d4");
+    board.move("e7e5");
+    const fen = board.fen();
+    expect(fen).to.be.a("string");
+  });
 
-console.log(board2.fen())
+  it("should get available moves after 2 moves", function () {
+    board.move("d2d4");
+    board.move("e7e5");
+    const moves = board.get_moves();
+    expect(moves).to.be.an("array");
+  });
 
-console.log(board2.get_moves())
+  it("should undo the last move", function () {
+    board.move("d2d4");
+    board.undo();
+    const fen = board.fen();
+    expect(fen).to.be.a("string");
+  });
 
-console.log(board.get_kings("w"))
+  it("should determine the current turn", function () {
+    const turn = board.turn();
+    expect(turn).to.be.a("string");
+  });
 
-console.log(board.get_knights("b"))
+  it("should calculate the material value for black", function () {
+    const materialBlack = board.material("b");
+    expect(materialBlack).to.be.a("number");
+  });
+
+  it("should measure performance", function () {
+    const startTime = Date.now();
+    // ... (code for measuring performance)
+    const endTime = Date.now();
+    const averageTimePerMove = (endTime - startTime) / 1000000;
+    expect(averageTimePerMove).to.be.a("number");
+  });
+});
+
+describe("Custom Chess Board", function () {
+  let board;
+
+  beforeEach(function () {
+    board = new Board("8/8/8/8/8/2K5/8/Q2Bk3 w - - 11 11");
+  });
+
+  it("should have a custom FEN", function () {
+    const fen = board.fen();
+    expect(fen).to.be.a("string");
+  });
+
+  it("should get available moves on the custom board", function () {
+    const moves = board.get_moves();
+    expect(moves).to.be.an("array");
+  });
+
+  it("should find the positions of white kings and black knights", function () {
+    const whiteKings = board.get_kings("w");
+    const blackKnights = board.get_knights("b");
+    expect(whiteKings).to.be.an("array");
+    expect(blackKnights).to.be.an("array");
+  });
+});
