@@ -81,6 +81,72 @@ class Board
     }
 
     /**
+     * Get an array of the locations of all the pawns for a color
+     * 
+     * @param {String} color "w" or "b"
+     * @returns {Array} Array of locations of pawns
+     */
+    get_pawns(color)
+    {
+        return jankchess["BoardWrapper::NativeGetPawns"](this._native_pointer, color)
+    }
+
+    /**
+    * Get an array of the locations of all the knights for a color
+    *
+    * @param {String} color "w" or "b"
+    * @returns {Array} Array of locations of knights
+    */
+    get_knights(color)
+    {
+        return jankchess["BoardWrapper::NativeGetKnights"](this._native_pointer, color)
+    }
+
+    /**
+     * Get an array of the locations of all the bishops for a color
+     * 
+     * @param {String} color "w" or "b"
+     * @returns {Array} Array of locations of bishops
+     */
+    get_bishops(color)
+    {
+        return jankchess["BoardWrapper::NativeGetBishops"](this._native_pointer, color)
+    }
+
+    /**
+     * Get an array of the locations of all the rooks for a color
+     * 
+     * @param {String} color "w" or "b"
+     * @returns {Array} Array of locations of rooks
+     */
+    get_rooks(color)
+    {
+        return jankchess["BoardWrapper::NativeGetRooks"](this._native_pointer, color)
+    }
+
+    /**
+     * Get an array of the locations of all the queens for a color
+     * 
+     * @param {String} color "w" or "b"
+     * @returns {Array} Array of locations of queens
+     */
+    get_queens(color)
+    {
+        return jankchess["BoardWrapper::NativeGetQueens"](this._native_pointer, color)
+    }
+
+    /**
+     * Get an array of the locations of all the kings for a color
+     * 
+     * @param {String} color "w" or "b"
+     * @returns {Array} Array of locations of kings
+     */
+    get_kings(color)
+    {
+        return jankchess["BoardWrapper::NativeGetKings"](this._native_pointer, color)
+    }
+
+    /**
      * Construct a board from a FEN string
      * 
      * @param {String} fen FEN string

@@ -2,6 +2,23 @@
 
 const std::string piece[8] = {"p", "n", "b", "r", "q", "k"};
 
+Napi::Array BBoard2Array(Napi::Env env, BBOARD b) {
+    
+    std::vector<int> peice_indexes;
+
+    int i = 0;
+
+    while ( b ) 
+        peice_indexes.push_back(BBoard::LS1Idx(BBoard::popLS1B(&b)));
+
+    
+    Napi::Array arr = Napi::Array::New(env, peice_indexes.size());
+
+    for (int i = 0; i < peice_indexes.size(); i++) 
+        arr[i] = Napi::Number::New(env, peice_indexes[i]);
+
+    return arr;
+}
 
 Board* getBoard(const Napi::CallbackInfo& info) {
 
@@ -24,8 +41,113 @@ Napi::Object BoardWrapper::Init(Napi::Env env, Napi::Object exports)
     exports.Set("BoardWrapper::NativeGetMaterial", Napi::Function::New(env, BoardWrapper::NativeGetMaterial));
     exports.Set("BoardWrapper::NativeGetFen", Napi::Function::New(env, BoardWrapper::NativeGetFen));
 
+    exports.Set("BoardWrapper::NativeGetPawns", Napi::Function::New(env, BoardWrapper::NativeGetPawns));
+    exports.Set("BoardWrapper::NativeGetKnights", Napi::Function::New(env, BoardWrapper::NativeGetKnights));
+    exports.Set("BoardWrapper::NativeGetBishops", Napi::Function::New(env, BoardWrapper::NativeGetBishops));
+    exports.Set("BoardWrapper::NativeGetRooks", Napi::Function::New(env, BoardWrapper::NativeGetRooks));
+    exports.Set("BoardWrapper::NativeGetQueens", Napi::Function::New(env, BoardWrapper::NativeGetQueens));
+    exports.Set("BoardWrapper::NativeGetKings", Napi::Function::New(env, BoardWrapper::NativeGetKings));
+
     return exports;
 }
+
+
+Napi::Value BoardWrapper::NativeGetPawns(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+
+    Board* board = getBoard(info);
+
+    std::string color = info[1].As<Napi::String>().Utf8Value();
+
+    Color c = color == "w" ? Color::white : Color::black;
+    
+
+    BBOARD b = board->getPawns(c);
+
+    return BBoard2Array(env, b);
+}
+
+Napi::Value BoardWrapper::NativeGetKnights(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+
+    Board* board = getBoard(info);
+
+    std::string color = info[1].As<Napi::String>().Utf8Value();
+
+    Color c = color == "w" ? Color::white : Color::black;
+    
+
+    BBOARD b = board->getKnights(c);
+
+    return BBoard2Array(env, b);
+}
+
+Napi::Value BoardWrapper::NativeGetBishops(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+
+    Board* board = getBoard(info);
+
+    std::string color = info[1].As<Napi::String>().Utf8Value();
+
+    Color c = color == "w" ? Color::white : Color::black;
+    
+
+    BBOARD b = board->getBishops(c);
+
+    return BBoard2Array(env, b);
+}
+
+Napi::Value BoardWrapper::NativeGetRooks(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+
+    Board* board = getBoard(info);
+
+    std::string color = info[1].As<Napi::String>().Utf8Value();
+
+    Color c = color == "w" ? Color::white : Color::black;
+    
+
+    BBOARD b = board->getRooks(c);
+
+    return BBoard2Array(env, b);
+}
+
+Napi::Value BoardWrapper::NativeGetQueens(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+
+    Board* board = getBoard(info);
+
+    std::string color = info[1].As<Napi::String>().Utf8Value();
+
+    Color c = color == "w" ? Color::white : Color::black;
+    
+
+    BBOARD b = board->getQueens(c);
+
+    return BBoard2Array(env, b);
+}
+
+Napi::Value BoardWrapper::NativeGetKings(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+
+    Board* board = getBoard(info);
+
+    std::string color = info[1].As<Napi::String>().Utf8Value();
+
+    Color c = color == "w" ? Color::white : Color::black;
+    
+
+    BBOARD b = board->getKings(c);
+
+    return BBoard2Array(env, b);
+}
+
 
 Napi::Number BoardWrapper::NativeConstructor(const Napi::CallbackInfo& info)
 {

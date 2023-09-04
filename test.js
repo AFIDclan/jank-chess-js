@@ -60,3 +60,6 @@ console.log(board2.fen())
 
 console.log(board2.get_moves())
 
+console.log(board.get_kings("w"))
+
+console.log(board.get_knights("b"))
