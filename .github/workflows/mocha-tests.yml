@@ -1,4 +1,4 @@
-name: Run Mocha Tests
+name: Mocha Tests
 
 on:
   push:
