@@ -5,10 +5,10 @@
   "main": "index.js",
   "gypfile": true,
   "scripts": {
+    "preinstall": "git submodule update --init && node-gyp rebuild",
     "build": "node-gyp rebuild",
     "clean": "node-gyp clean",
-    "test": "npx mocha test.js",
-    "preinstall": "git submodule update --init"
+    "test": "npx mocha test.js"
   },
   "author": "Jonathan Van Schenck, Sean Sullivan",
   "license": "ISC",
