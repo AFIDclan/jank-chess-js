@@ -7,7 +7,8 @@
   "scripts": {
     "build": "node-gyp rebuild",
     "clean": "node-gyp clean",
-    "test": "npx mocha test.js"
+    "test": "npx mocha test.js",
+    "preinstall": "git submodule update --init"
   },
   "author": "Jonathan Van Schenck, Sean Sullivan",
   "license": "ISC",

@@ -1,0 +1,3 @@
+[submodule "src/jank-chess"]
+	path = src/jank-chess
+	url = https://github.com/jonathanvanschenck/jank-chess.git
