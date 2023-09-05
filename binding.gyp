@@ -6,7 +6,7 @@
         "sources": [
             "src/wrapper.cpp",
             "src/jank-chess/engine/src/Attack.cpp",
-            "src/jank-chess/engine/src/Bboard.cpp",
+            "src/jank-chess/engine/src/BBoard.cpp",
             "src/jank-chess/engine/src/Board.cpp",
             "src/jank-chess/engine/src/FindMagic.cpp",
             "src/jank-chess/engine/src/Game.cpp",
