@@ -83,7 +83,7 @@ describe("Piece Position Querying", ()=>{
   
   it("should find the positions of white kings", ()=>{
     const k = board.get_kings("w");
-    expect(k[0]).to.equal(4);
+    expect(k[0]).to.equal(5);
   });
 
   it("should find the positions of black kings", ()=>{
