@@ -1,6 +1,6 @@
 {
   "name": "jank-chess",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A javascript wrapped c++ chess engine for fun and profit!",
   "main": "index.js",
   "gypfile": true,
