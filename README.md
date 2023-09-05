@@ -4,6 +4,10 @@
 A very preformant native c++ chess engine wrapped in nodejs for fun and profit!
 
 
+## Tests
+
+![example workflow](https://github.com/AFIDclan/jank-chess-js/actions/workflows/mocha-tests.yml/badge.svg)
+
 ## Installation
 
 Install jank-chess with npm
