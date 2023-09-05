@@ -7,7 +7,7 @@ on:
 
 jobs:
   # Runs on linux
-  test:
+  test-linux:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,11 +22,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run Mocha tests
+      - name: Run Mocha tests on Linux
         run: npm test
 
-  # Runs on windows
-  test:
+  # Runs on Windows
+  test-windows:
     runs-on: windows-latest
 
     steps:
@@ -41,5 +41,5 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run Mocha tests
+      - name: Run Mocha tests on Windows
         run: npm test
